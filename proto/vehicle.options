@@ -16,5 +16,11 @@ CarServer.TirePressureState.tpms_last_seen_pressure_time_fr type:FT_IGNORE
 CarServer.TirePressureState.tpms_last_seen_pressure_time_rl type:FT_IGNORE
 CarServer.TirePressureState.tpms_last_seen_pressure_time_rr type:FT_IGNORE
 CarServer.MediaState.timestamp type:FT_IGNORE
+CarServer.MediaState.now_playing_artist   max_size:128
+CarServer.MediaState.now_playing_title    max_size:128
 CarServer.MediaDetailState.timestamp type:FT_IGNORE
+CarServer.MediaDetailState.now_playing_album          max_size:128
+CarServer.MediaDetailState.now_playing_source_string   max_size:64
+CarServer.MediaDetailState.now_playing_station         max_size:64
+CarServer.MediaDetailState.a2dp_source_name            max_size:64
 CarServer.LocationState.timestamp type:FT_IGNORE

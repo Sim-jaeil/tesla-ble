@@ -104,6 +104,13 @@ class Vehicle {
   void set_closures_state_callback(std::function<void(const CarServer_ClosuresState &)> cb) {
     closures_state_callback_ = std::move(cb);
   }
+  void set_media_state_callback(std::function<void(const char *artist, const char *title,
+                                                    CarServer_MediaPlaybackStatus status)> cb) {
+    media_state_callback_ = std::move(cb);
+  }
+  void set_media_detail_state_callback(std::function<void(int32_t duration, int32_t elapsed)> cb) {
+    media_detail_state_callback_ = std::move(cb);
+  }
 
   void wake();
   void vcsec_poll();
@@ -113,6 +120,8 @@ class Vehicle {
   void drive_state_poll(bool force_wake = false);
   void closures_state_poll(bool force_wake = false);
   void tire_pressure_poll(bool force_wake = false);
+  void media_state_poll(bool force_wake = false);
+  void media_detail_state_poll(bool force_wake = false);
 
   void set_charging_state(bool enable);
   void set_charging_amps(int amps);
@@ -195,6 +204,8 @@ class Vehicle {
   std::function<void(const CarServer_DriveState &)> drive_state_callback_;
   std::function<void(const CarServer_TirePressureState &)> tire_pressure_callback_;
   std::function<void(const CarServer_ClosuresState &)> closures_state_callback_;
+  std::function<void(const char *, const char *, CarServer_MediaPlaybackStatus)> media_state_callback_;
+  std::function<void(int32_t, int32_t)> media_detail_state_callback_;
 
   bool is_connected_ = false;
   bool is_vehicle_awake_ = false;  // From VCSEC sleep status (inverted: true unless explicitly ASLEEP)

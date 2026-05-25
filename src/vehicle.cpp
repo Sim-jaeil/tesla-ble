@@ -768,6 +768,15 @@ void TeslaBLE::Vehicle::handle_vcsec_message_(const UniversalMessage_RoutableMes
   }
 }
 
+static bool nanopb_decode_string(pb_istream_t *stream, const pb_field_t * /*field*/, void **arg) {
+  char *dest = static_cast<char *>(*arg);
+  size_t len = stream->bytes_left;
+  if (len > 127) len = 127;
+  if (!pb_read(stream, reinterpret_cast<pb_byte_t *>(dest), len)) return false;
+  dest[len] = '\0';
+  return true;
+}
+
 void TeslaBLE::Vehicle::handle_carserver_message_(const UniversalMessage_RoutableMessage &msg) {
   LOG_DEBUG("Processing CarServer message");
   const Signatures_SignatureData *sig_data = nullptr;
@@ -779,6 +788,17 @@ void TeslaBLE::Vehicle::handle_carserver_message_(const UniversalMessage_Routabl
     fault = msg.signedMessageStatus.signed_message_fault;
   }
   CarServer_Response response = CarServer_Response_init_default;
+
+  static char s_artist_buf[128];
+  static char s_title_buf[128];
+  s_artist_buf[0] = '\0';
+  s_title_buf[0] = '\0';
+  auto &ms = response.response_msg.vehicleData.media_state;
+  ms.optional_now_playing_artist.now_playing_artist.funcs.decode = nanopb_decode_string;
+  ms.optional_now_playing_artist.now_playing_artist.arg = s_artist_buf;
+  ms.optional_now_playing_title.now_playing_title.funcs.decode = nanopb_decode_string;
+  ms.optional_now_playing_title.now_playing_title.arg = s_title_buf;
+
   uint32_t response_counter = 0;
   int result = client_->parse_payload_car_server_response(
       const_cast<UniversalMessage_RoutableMessage_protobuf_message_as_bytes_t *>(
@@ -807,6 +827,15 @@ void TeslaBLE::Vehicle::handle_carserver_message_(const UniversalMessage_Routabl
     emit_if(vd.has_drive_state, drive_state_callback_, vd.drive_state);
     emit_if(vd.has_tire_pressure_state, tire_pressure_callback_, vd.tire_pressure_state);
     emit_if(vd.has_closures_state, closures_state_callback_, vd.closures_state);
+    if (vd.has_media_state && media_state_callback_) {
+      media_state_callback_(s_artist_buf, s_title_buf,
+                            vd.media_state.optional_media_playback_status.media_playback_status);
+    }
+    if (vd.has_media_detail_state && media_detail_state_callback_) {
+      media_detail_state_callback_(
+          vd.media_detail_state.optional_now_playing_duration.now_playing_duration,
+          vd.media_detail_state.optional_now_playing_elapsed.now_playing_elapsed);
+    }
   }
   auto cmd = peek_command_();
   if (cmd && cmd->domain == UniversalMessage_Domain_DOMAIN_INFOTAINMENT &&
@@ -1068,6 +1097,14 @@ void TeslaBLE::Vehicle::closures_state_poll(bool force_wake) {
 
 void TeslaBLE::Vehicle::tire_pressure_poll(bool force_wake) {
   send_infotainment_poll_("Tire Pressure Poll", CarServer_GetVehicleData_getTirePressureState_tag, force_wake);
+}
+
+void TeslaBLE::Vehicle::media_state_poll(bool force_wake) {
+  send_infotainment_poll_("Media State Poll", CarServer_GetVehicleData_getMediaState_tag, force_wake);
+}
+
+void TeslaBLE::Vehicle::media_detail_state_poll(bool force_wake) {
+  send_infotainment_poll_("Media Detail Poll", CarServer_GetVehicleData_getMediaDetailState_tag, force_wake);
 }
 
 void TeslaBLE::Vehicle::set_charging_state(bool enable) {
