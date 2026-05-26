@@ -1216,6 +1216,10 @@ void TeslaBLE::Vehicle::media_previous_track() {
   send_infotainment_action_("Media Prev", CarServer_VehicleAction_mediaPreviousTrack_tag);
 }
 
+void TeslaBLE::Vehicle::media_set_volume(float volume) {
+  send_infotainment_action_("Media Volume", CarServer_VehicleAction_mediaUpdateVolume_tag, volume);
+}
+
 void TeslaBLE::Vehicle::set_climate(bool enable) {
   send_infotainment_action_(enable ? "Climate On" : "Climate Off", CarServer_VehicleAction_hvacAutoAction_tag, enable);
 }

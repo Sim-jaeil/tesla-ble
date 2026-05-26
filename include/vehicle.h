@@ -142,6 +142,7 @@ class Vehicle {
   void media_toggle_playback();
   void media_next_track();
   void media_previous_track();
+  void media_set_volume(float volume);
 
   // HVAC controls (infotainment)
   void set_climate(bool enable);

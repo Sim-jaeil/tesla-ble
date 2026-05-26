@@ -38,6 +38,7 @@ static int build_vehicle_control_reset_valet_pin(CarServer_VehicleAction &action
 static int build_vehicle_control_reset_pin_to_drive(CarServer_VehicleAction &action, const void *data);
 static int build_driving_clear_speed_limit_pin_admin(CarServer_VehicleAction &action, const void *data);
 static int build_vehicle_control_reset_pin_to_drive_admin(CarServer_VehicleAction &action, const void *data);
+static int build_media_update_volume(CarServer_VehicleAction &action, const void *data);
 
 namespace {
 template<typename T> const T *require_data(const void *data, const char *message) {
@@ -82,7 +83,8 @@ const std::unordered_map<pb_size_t, VehicleActionBuilder::BuilderFunction> Vehic
     {CarServer_VehicleAction_hvacBioweaponModeAction_tag, build_hvac_bioweapon_mode},
     {CarServer_VehicleAction_vehicleControlScheduleSoftwareUpdateAction_tag,
      build_vehicle_control_schedule_software_update},
-    {CarServer_VehicleAction_setCabinOverheatProtectionAction_tag, build_set_cabin_overheat_protection}};
+    {CarServer_VehicleAction_setCabinOverheatProtectionAction_tag, build_set_cabin_overheat_protection},
+    {CarServer_VehicleAction_mediaUpdateVolume_tag, build_media_update_volume}};
 
 // Builder implementations
 int VehicleActionBuilder::build_charging_set_limit(CarServer_VehicleAction &action, const void *data) {
@@ -264,6 +266,16 @@ int VehicleActionBuilder::build_media_next_track(CarServer_VehicleAction &action
 
 int VehicleActionBuilder::build_media_previous_track(CarServer_VehicleAction &action, const void *data) {
   action.vehicle_action_msg.mediaPreviousTrack = CarServer_MediaPreviousTrack_init_default;
+  return TeslaBLE_Status_E_OK;
+}
+
+int VehicleActionBuilder::build_media_update_volume(CarServer_VehicleAction &action, const void *data) {
+  const float *volume_ptr = require_data<float>(data, "Volume update requires float data");
+  if (!volume_ptr) return TeslaBLE_Status_E_ERROR_INVALID_PARAMS;
+  action.vehicle_action_msg.mediaUpdateVolume = CarServer_MediaUpdateVolume_init_default;
+  action.vehicle_action_msg.mediaUpdateVolume.which_media_volume =
+      CarServer_MediaUpdateVolume_volume_absolute_float_tag;
+  action.vehicle_action_msg.mediaUpdateVolume.media_volume.volume_absolute_float = *volume_ptr;
   return TeslaBLE_Status_E_OK;
 }
 
