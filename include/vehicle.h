@@ -138,6 +138,11 @@ class Vehicle {
   void close_charge_port();
   void unlatch_driver_door();
 
+  // Media controls (infotainment)
+  void media_toggle_playback();
+  void media_next_track();
+  void media_previous_track();
+
   // HVAC controls (infotainment)
   void set_climate(bool enable);
   void set_climate_temp(float temp_celsius);

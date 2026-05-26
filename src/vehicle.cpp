@@ -1204,6 +1204,18 @@ void TeslaBLE::Vehicle::unlatch_driver_door() {
 // HVAC Controls (Infotainment)
 // =============================================================================
 
+void TeslaBLE::Vehicle::media_toggle_playback() {
+  send_infotainment_action_("Media Toggle", CarServer_VehicleAction_mediaPlayAction_tag);
+}
+
+void TeslaBLE::Vehicle::media_next_track() {
+  send_infotainment_action_("Media Next", CarServer_VehicleAction_mediaNextTrack_tag);
+}
+
+void TeslaBLE::Vehicle::media_previous_track() {
+  send_infotainment_action_("Media Prev", CarServer_VehicleAction_mediaPreviousTrack_tag);
+}
+
 void TeslaBLE::Vehicle::set_climate(bool enable) {
   send_infotainment_action_(enable ? "Climate On" : "Climate Off", CarServer_VehicleAction_hvacAutoAction_tag, enable);
 }
