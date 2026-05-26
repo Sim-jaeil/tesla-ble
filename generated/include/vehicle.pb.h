@@ -1172,6 +1172,8 @@ typedef struct _CarServer_ClimateState {
   union {
     CarServer_ClimateState_COPNotRunningReason cop_not_running_reason;
   } optional_cop_not_running_reason;
+  bool has_timestamp;
+  google_protobuf_Timestamp timestamp;
 } CarServer_ClimateState;
 
 typedef struct _CarServer_TirePressureState {
@@ -1734,7 +1736,7 @@ extern "C" {
         {_CarServer_ClimateState_CopActivationTemp_MIN}, 0, {0}, 0, {_CarServer_StwHeatLevel_MIN}, 0, \
         {_CarServer_ClimateState_HvacAutoRequest_MIN}, 0, { \
       _CarServer_ClimateState_COPNotRunningReason_MIN \
-    } \
+    }, false, google_protobuf_Timestamp_init_default \
   }
 #define CarServer_ClimateState_ClimateKeeperMode_init_default \
   { \
@@ -1988,7 +1990,7 @@ extern "C" {
         {_CarServer_ClimateState_CopActivationTemp_MIN}, 0, {0}, 0, {_CarServer_StwHeatLevel_MIN}, 0, \
         {_CarServer_ClimateState_HvacAutoRequest_MIN}, 0, { \
       _CarServer_ClimateState_COPNotRunningReason_MIN \
-    } \
+    }, false, google_protobuf_Timestamp_init_zero \
   }
 #define CarServer_ClimateState_ClimateKeeperMode_init_zero \
   { \
@@ -2293,6 +2295,7 @@ extern "C" {
 #define CarServer_ClimateState_steering_wheel_heat_level_tag 148
 #define CarServer_ClimateState_hvac_auto_request_tag 150
 #define CarServer_ClimateState_cop_not_running_reason_tag 151
+#define CarServer_ClimateState_timestamp_tag 33
 #define CarServer_TirePressureState_tpms_pressure_fl_tag 2
 #define CarServer_TirePressureState_tpms_pressure_fr_tag 3
 #define CarServer_TirePressureState_tpms_pressure_rl_tag 4
@@ -3179,11 +3182,13 @@ extern "C" {
     (optional_hvac_auto_request, hvac_auto_request, optional_hvac_auto_request.hvac_auto_request), 150) \
   X(a, STATIC, ONEOF, UENUM, \
     (optional_cop_not_running_reason, cop_not_running_reason, optional_cop_not_running_reason.cop_not_running_reason), \
-    151)
+    151) \
+  X(a, STATIC, OPTIONAL, MESSAGE, timestamp, 33)
 #define CarServer_ClimateState_CALLBACK NULL
 #define CarServer_ClimateState_DEFAULT NULL
 #define CarServer_ClimateState_climate_keeper_mode_MSGTYPE CarServer_ClimateState_ClimateKeeperMode
 #define CarServer_ClimateState_defrost_mode_MSGTYPE CarServer_ClimateState_DefrostMode
+#define CarServer_ClimateState_timestamp_MSGTYPE google_protobuf_Timestamp
 
 #define CarServer_ClimateState_ClimateKeeperMode_FIELDLIST(X, a) \
   X(a, STATIC, ONEOF, MESSAGE, (type, Unknown, type.Unknown), 1) \

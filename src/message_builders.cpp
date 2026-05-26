@@ -5,6 +5,7 @@
 
 #include "car_server.pb.h"
 #include "universal_message.pb.h"
+#include <pb_encode.h>
 
 namespace TeslaBLE {
 
@@ -84,7 +85,8 @@ const std::unordered_map<pb_size_t, VehicleActionBuilder::BuilderFunction> Vehic
     {CarServer_VehicleAction_vehicleControlScheduleSoftwareUpdateAction_tag,
      build_vehicle_control_schedule_software_update},
     {CarServer_VehicleAction_setCabinOverheatProtectionAction_tag, build_set_cabin_overheat_protection},
-    {CarServer_VehicleAction_mediaUpdateVolume_tag, build_media_update_volume}};
+    {CarServer_VehicleAction_mediaUpdateVolume_tag, build_media_update_volume},
+    {CarServer_VehicleAction_hvacSeatHeaterActions_tag, build_hvac_seat_heater}};
 
 // Builder implementations
 int VehicleActionBuilder::build_charging_set_limit(CarServer_VehicleAction &action, const void *data) {
@@ -444,6 +446,29 @@ bool ParameterValidator::is_valid_connection_id(const pb_byte_t *connection_id) 
   }
 
   return false;
+}
+
+static SeatHeaterParam s_sh_ctx;
+
+static bool encode_seat_heater_cb(pb_ostream_t *stream, const pb_field_t *field, void * const *arg) {
+  SeatHeaterParam *ctx = (SeatHeaterParam *)*arg;
+  CarServer_HvacSeatHeaterActions_HvacSeatHeaterAction entry =
+      CarServer_HvacSeatHeaterActions_HvacSeatHeaterAction_init_default;
+  entry.which_seat_heater_level = ctx->level_tag;
+  entry.which_seat_position = ctx->seat_tag;
+  if (!pb_encode_tag_for_field(stream, field)) return false;
+  return pb_encode_submessage(stream,
+      CarServer_HvacSeatHeaterActions_HvacSeatHeaterAction_fields, &entry);
+}
+
+int VehicleActionBuilder::build_hvac_seat_heater(CarServer_VehicleAction &action, const void *data) {
+  const SeatHeaterParam *param = require_data<SeatHeaterParam>(data, "Seat heater requires SeatHeaterParam");
+  if (!param) return TeslaBLE_Status_E_ERROR_INVALID_PARAMS;
+  s_sh_ctx = *param;
+  action.vehicle_action_msg.hvacSeatHeaterActions = CarServer_HvacSeatHeaterActions_init_default;
+  action.vehicle_action_msg.hvacSeatHeaterActions.hvacSeatHeaterAction.funcs.encode = encode_seat_heater_cb;
+  action.vehicle_action_msg.hvacSeatHeaterActions.hvacSeatHeaterAction.arg = &s_sh_ctx;
+  return TeslaBLE_Status_E_OK;
 }
 
 }  // namespace TeslaBLE

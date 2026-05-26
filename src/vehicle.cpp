@@ -6,6 +6,7 @@
 
 #include "command_error.h"
 #include "defs.h"
+#include "message_builders.h"
 
 #include "tb_logging.h"
 #include "tb_utils.h"
@@ -1248,6 +1249,12 @@ void TeslaBLE::Vehicle::set_preconditioning_max(bool enable) {
 void TeslaBLE::Vehicle::set_steering_wheel_heat(bool enable) {
   send_infotainment_action_(enable ? "Steering Heat On" : "Steering Heat Off",
                             CarServer_VehicleAction_hvacSteeringWheelHeaterAction_tag, enable);
+}
+
+void TeslaBLE::Vehicle::set_seat_heater(int seat_position_tag, int level_tag) {
+  SeatHeaterParam param = {seat_position_tag, level_tag};
+  send_infotainment_action_with_value_("Set Seat Heater",
+                                       CarServer_VehicleAction_hvacSeatHeaterActions_tag, param);
 }
 
 // =============================================================================

@@ -9,7 +9,7 @@ CarServer.DriveState.timestamp type:FT_IGNORE
 CarServer.DriveState.last_traffic_update type:FT_IGNORE
 CarServer.ChargeState.scheduled_departure_time type:FT_IGNORE
 CarServer.ChargeState.timestamp type:FT_IGNORE
-CarServer.ClimateState.timestamp type:FT_IGNORE
+# CarServer.ClimateState.timestamp type:FT_IGNORE
 CarServer.TirePressureState.timestamp type:FT_IGNORE
 CarServer.TirePressureState.tpms_last_seen_pressure_time_fl type:FT_IGNORE
 CarServer.TirePressureState.tpms_last_seen_pressure_time_fr type:FT_IGNORE

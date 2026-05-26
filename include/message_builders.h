@@ -8,6 +8,12 @@
 #include "defs.h"
 
 namespace TeslaBLE {
+
+struct SeatHeaterParam {
+  int seat_tag;
+  int level_tag;
+};
+
 /**
  * @brief Factory class for building vehicle action messages.
  *
@@ -56,6 +62,7 @@ class VehicleActionBuilder {
   static int build_hvac_bioweapon_mode(CarServer_VehicleAction &action, const void *data);
   static int build_vehicle_control_schedule_software_update(CarServer_VehicleAction &action, const void *data);
   static int build_set_cabin_overheat_protection(CarServer_VehicleAction &action, const void *data);
+  static int build_hvac_seat_heater(CarServer_VehicleAction &action, const void *data);
 
   // Map of action types to their builder functions
   static const std::unordered_map<pb_size_t, BuilderFunction> BUILDERS;
